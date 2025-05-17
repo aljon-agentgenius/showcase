@@ -119,3 +119,7 @@ input:focus {
 .bg-white.p-6.rounded-lg.shadow-md:hover {
   transform: translateY(-5px);
 } 
+
+.chat-footer{
+display: none;
+}
