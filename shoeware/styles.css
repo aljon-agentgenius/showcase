@@ -120,6 +120,6 @@ input:focus {
   transform: translateY(-5px);
 } 
 
-.chat-footer{
-display: none;
+.chat-footer {
+  display: none !important;
 }
