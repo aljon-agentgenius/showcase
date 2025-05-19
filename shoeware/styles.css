@@ -123,3 +123,10 @@ input:focus {
 .chat-footer {
   display: none !important;
 }
+
+
+@media (max-width: 600px) {
+  .chat-container {
+    width: 90% !important;
+  }
+}
