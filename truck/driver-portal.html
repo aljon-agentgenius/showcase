@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Portal - Truck Monitoring System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-truck text-blue-600 text-2xl mr-3"></i>
+                    <h1 class="text-xl font-bold text-gray-800">Driver Portal</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600" id="currentTime"></span>
+                    <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome, Driver!</h2>
+                    <p class="text-gray-600" id="userEmail"></p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-500">Today's Date</div>
+                    <div class="text-lg font-semibold text-gray-800" id="currentDate"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clock In/Out Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Clock Status -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Clock Status</h3>
+                <div class="text-center">
+                    <div class="text-6xl font-bold text-blue-600 mb-4" id="clockDisplay">--:--</div>
+                    <div class="text-lg text-gray-600 mb-6" id="statusText">Not Clocked In</div>
+                    
+                    <!-- Uniform Check Section -->
+                    <div id="uniformCheckSection" class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <div class="flex items-center justify-center mb-3">
+                            <i class="fas fa-tshirt text-yellow-600 text-xl mr-2"></i>
+                            <span class="text-yellow-800 font-semibold">Uniform Check Required</span>
+                        </div>
+                        <p class="text-sm text-yellow-700 mb-3">Please upload a photo showing your proper uniform before clocking in.</p>
+                        <div class="space-y-3">
+                            <input type="file" id="uniformImageInput" accept="image/*" 
+                                   class="hidden" onchange="handleUniformImage(event)">
+                            <button onclick="document.getElementById('uniformImageInput').click()" 
+                                    class="w-full bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition duration-200">
+                                <i class="fas fa-camera mr-2"></i>Take Uniform Photo
+                            </button>
+                        </div>
+                        <div id="uniformPreview" class="mt-3 hidden">
+                            <img id="uniformImage" class="w-full h-32 object-cover rounded-lg border" alt="Uniform Preview">
+                            <div class="flex space-x-2 mt-2">
+                                <button onclick="retakeUniformPhoto()" class="text-sm text-yellow-700 hover:text-yellow-900">
+                                    <i class="fas fa-redo mr-1"></i>Retake
+                                </button>
+                                <button onclick="confirmUniformPhoto()" class="text-sm text-green-700 hover:text-green-900">
+                                    <i class="fas fa-check mr-1"></i>Confirm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <button id="clockInBtn" onclick="clockIn()" 
+                                class="w-full bg-gray-400 text-white py-3 px-6 rounded-lg font-semibold cursor-not-allowed" disabled>
+                            <i class="fas fa-clock mr-2"></i>Clock In (Requires Uniform Photo)
+                        </button>
+                        <button id="clockOutBtn" onclick="clockOut()" 
+                                class="w-full bg-red-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-red-600 transition duration-200 transform hover:scale-105 hidden">
+                            <i class="fas fa-stop-circle mr-2"></i>Clock Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Summary -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Today's Summary</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Clock In Time:</span>
+                        <span class="font-semibold" id="clockInTime">--:--</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Clock Out Time:</span>
+                        <span class="font-semibold" id="clockOutTime">--:--</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Total Hours:</span>
+                        <span class="font-semibold text-blue-600" id="totalHours">0h 0m</span>
+                    </div>
+                    
+                    <!-- Uniform Photo Display -->
+                    <div id="uniformPhotoDisplay" class="hidden">
+                        <div class="border-t pt-4 mt-4">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-tshirt text-green-600 mr-2"></i>
+                                <span class="text-sm font-medium text-gray-700">Uniform Photo</span>
+                            </div>
+                            <div class="relative">
+                                <img id="displayUniformPhoto" class="w-full h-40 object-cover rounded-lg border-2 border-green-200" alt="Uniform Photo">
+                                <div class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                                    <i class="fas fa-check mr-1"></i>Verified
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Upload Section -->
+       
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/driver-portal.js"></script>
+</body>
+</html> 
